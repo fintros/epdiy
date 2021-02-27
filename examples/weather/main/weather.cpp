@@ -62,7 +62,7 @@ const byte EventThreshold = 2; // Change to 1 to view all messages on e-paper sc
 int        wifi_signal, CurrentHour = 0, CurrentMin = 0, CurrentSec = 0, EventCnt = 0;
 
 //################ PROGRAM VARIABLES and OBJECTS ##########################################
-#define max_readings 8
+#define max_readings 7
 
 Forecast_record_type  WxConditions[1];
 Forecast_record_type  WxForecast[max_readings];
@@ -548,25 +548,26 @@ double NormalizedMoonPhase(int d, int m, int y) {
   return (Phase - (int) Phase);
 }
 
-void DisplayWeather() {                          // 9.7" e-paper display is 1200x825 resolution
-    DisplayStatusSection(990, 20, wifi_signal); // Wi-Fi signal strength and Battery voltage
-    DisplayGeneralInfoSection();                 // Top line of the display
-
-    DisplayDisplayWindSection(1000, 210, WxConditions[0].Winddir, WxConditions[0].Windspeed, 130);
-    DisplayAstronomySection(920, 720);             // Astronomy section Sun rise/set, Moon phase and Moon icon
-    DisplayMainWeatherSection(137, 130);          // Centre section of display for Location, temperature, Weather report, current Wx Symbol and wind direction    
-    DisplayForecastSection(10, 330);             // 3hr forecast boxes
+void DisplayWeather() { 
+  DisplayDisplayWindSection(780, 190, WxConditions[0].Winddir, WxConditions[0].Windspeed, 120);
+  DisplayMainWeatherSection(137, 100);          // Centre section of display for Location, temperature, Weather report, current Wx Symbol and wind direction
+  DisplayForecastSection(10, 250);            // 3hr forecast boxes
+  DisplayAstronomySection(660, 350);             // Astronomy section Sun rise/set, Moon phase and Moon icon
+  DisplayStatusSection(900, 20, wifi_signal); // Wi-Fi signal strength and Battery voltage
+  DisplayGeneralInfoSection();                 // Top line of the display
+  drawLine(25, 260, 530, 260, 0x0);
+  drawLine(25, 263, 530, 263, 0x0);
 }
 
 
 void DisplayGeneralInfoSection() {
   setFont(OpenSans8B);
-  drawString(4, 2, City, LEFT);
+  drawString(430, 2, City, LEFT);
   // Uncomment the next line if the display of IP- and MAC-Adddress is wanted
   //drawString(SCREEN_WIDTH - 150, 20, "IP=" + LocalIP + ",  MAC=" + WiFi.macAddress() ,RIGHT);
   drawLine(5, 30, SCREEN_WIDTH - 8, 30, 0xAA);
-  drawString(200, 2, Date_str, LEFT);
-  drawString(400, 2, TXT_UPDATED + Time_str, LEFT);
+  drawString(290, 2, Date_str, CENTER);
+  drawString(730, 2, TXT_UPDATED + Time_str, CENTER);
 }
 
 void DisplayMainWeatherSection(int x, int y) {  // (x=500, y=190)
@@ -669,7 +670,7 @@ void DisplayForecastWeather(int x, int y, int index) {
   DisplayConditionsSection(x + fwidth / 2, y + 90, WxForecast[index].Icon, SmallIcon);
   setFont(OpenSans8B);
   drawString(x + fwidth / 2 - 10, y + 30, String(WxForecast[index].Period.substring(11, 16)), CENTER);
-  drawString(x + fwidth / 2 + 0, y + 130, String(WxForecast[index].High, 0) + "°/" + String(WxForecast[index].Low, 0) + "°", CENTER);
+  drawString(x + fwidth / 2 + 0, y + 120, String(WxForecast[index].High, 0) + "°/" + String(WxForecast[index].Low, 0) + "°", CENTER);
 }
 
 void DisplayPrecipitationSection(int x, int y, int pwidth, int pdepth) {
@@ -685,15 +686,15 @@ void DisplayPrecipitationSection(int x, int y, int pwidth, int pdepth) {
 
 void DisplayAstronomySection(int x, int y) {
   setFont(OpenSans12B);
-  drawString(x + 14, y + 34, ConvertUnixTime(WxConditions[0].Sunrise).substring(0, 5) + " " + TXT_SUNRISE, LEFT);
-  drawString(x + 14, y + 64, ConvertUnixTime(WxConditions[0].Sunset).substring(0, 5) + " " + TXT_SUNSET, LEFT);
+  drawString(x + 80, y + 20, ConvertUnixTime(WxConditions[0].Sunrise).substring(0, 5) + " " + TXT_SUNRISE, LEFT);
+  drawString(x + 80, y + 160, ConvertUnixTime(WxConditions[0].Sunset).substring(0, 5) + " " + TXT_SUNSET, LEFT);
   time_t now = time(NULL);
   struct tm * now_utc  = gmtime(&now);
   const int day_utc = now_utc->tm_mday;
   const int month_utc = now_utc->tm_mon + 1;
   const int year_utc = now_utc->tm_year + 1900;
-  //drawString(x + 14, y + 94, MoonPhase(day_utc, month_utc, year_utc, Hemisphere), LEFT);
-  DrawMoon(x + 155, y - 20, day_utc, month_utc, year_utc, Hemisphere);
+  drawString(x + 180, y + 89, MoonPhase(day_utc, month_utc, year_utc, Hemisphere), LEFT);
+  DrawMoon(x + 50, y + 25, day_utc, month_utc, year_utc, Hemisphere);
 }
 
 void DrawMoon(int x, int y, int dd, int mm, int yy, String hemisphere) {
@@ -779,20 +780,20 @@ void DisplayForecastSection(int x, int y) {
     r++;
   } while (r <= max_readings);
   
-  int gwidth = 230, gheight = 150;
+  int gwidth = 150, gheight = 80;
   int gx = (SCREEN_WIDTH - gwidth * 4) / 5 + 7;
-  int gy = (SCREEN_HEIGHT - gheight - 50);
+  int gy = (SCREEN_HEIGHT - gheight - 30);
   int gap = gwidth + gx;
   //setFont(OpenSans12/*18*/);
   //drawString(SCREEN_WIDTH / 2 - 50, gy - 50, TXT_FORECAST_VALUES, CENTER); // Based on a graph height of 60
   //setFont(OpenSans12);
   // (x,y,width,height,MinValue, MaxValue, Title, Data Array, AutoScale, ChartMode)
-  //DrawGraph(gx + 0 * gap, gy, gwidth, gheight, 900, 1050, Units == "M" ? TXT_PRESSURE_HPA : TXT_PRESSURE_IN, pressure_readings, max_readings, autoscale_on, barchart_off);
   DrawGraph(gx + 0 * gap, gy, gwidth, gheight, 10, 30,    Units == "M" ? TXT_TEMPERATURE_C : TXT_TEMPERATURE_F, temperature_readings, max_readings, autoscale_on, barchart_off);
   //DrawGraph(gx + 1 * gap, gy, gwidth, gheight, 0, 100,   TXT_HUMIDITY_PERCENT, humidity_readings, max_readings, autoscale_off, barchart_off);
   if (SumOfPrecip(rain_readings, max_readings) >= SumOfPrecip(snow_readings, max_readings))
     DrawGraph(gx + 1 * gap + 5, gy, gwidth, gheight, 0, 30, Units == "M" ? TXT_RAINFALL_MM : TXT_RAINFALL_IN, rain_readings, max_readings, autoscale_on, barchart_on);
   else DrawGraph(gx + 1 * gap + 5, gy, gwidth, gheight, 0, 30, Units == "M" ? TXT_SNOWFALL_MM : TXT_SNOWFALL_IN, snow_readings, max_readings, autoscale_on, barchart_on);
+  DrawGraph(gx + 2 * gap, gy, gwidth, gheight, 0, 30, Units == "M" ? TXT_PRESSURE_HPA : TXT_PRESSURE_IN, pressure_readings, max_readings, autoscale_on, barchart_off);
 }
 
 void DisplayConditionsSection(int x, int y, String IconName, bool IconSize) {
@@ -811,8 +812,8 @@ void DisplayConditionsSection(int x, int y, String IconName, bool IconSize) {
   if (IconSize == LargeIcon) {
     setFont(OpenSans16B/*18*/);
     drawString(x + 360, y - 74, String(WxConditions[0].Humidity, 0) + "%", CENTER);
-    if (WxConditions[0].Visibility > 0) Visibility(x - 100, y + 130, String(WxConditions[0].Visibility) + "M");
-    if (WxConditions[0].Cloudcover > 0) CloudCover(x + 60, y + 130, WxConditions[0].Cloudcover);
+    if (WxConditions[0].Visibility > 0) Visibility(x - 100, y + 90, String(WxConditions[0].Visibility) + "M");
+    if (WxConditions[0].Cloudcover > 0) CloudCover(x + 60, y + 90, WxConditions[0].Cloudcover);
   } 
 }
 

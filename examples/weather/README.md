@@ -10,8 +10,8 @@ THe  license details are outlined in **License.txt**.
 Building It
 -----------
 
- - Girst you need to install Arduino esp-idf as a component https://github.com/espressif/arduino-esp32/blob/master/docs/esp-idf_component.md (the easiest way is to put it into components folder of ESP-IDF)
- - Put Arduino JSON https://github.com/bblanchon/ArduinoJson into components/arduino/
+ - First you need to install Arduino esp-idf as a component https://github.com/espressif/arduino-esp32/blob/master/docs/esp-idf_component.md (the easiest way is to put it into components folder of ESP-IDF)
+ - Put Arduino JSON https://github.com/bblanchon/ArduinoJson into components/arduino/library and add corresponding line to components/arduino/CMakeLists.txt (COMPONENT_ADD_INCLUDEDIRS) section
  - Dont forget to insert your Wi-Fi settings and openweathermap API key into owm_credentials.h
  - If you want to add more fonts, firmware may not fit into 1M and easiest way to fix it is to edit components/partition_table/partitions_singleapp.csv and change 1M to 2M
 

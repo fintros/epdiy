@@ -1,6 +1,8 @@
 Weather display example
 =======================================
 
+This example is tuned for LilyGO T5-4.7".
+
 This is **port of project https://github.com/G6EJD/ESP32-e-Paper-Weather-Display by David Bird 2018** to work with ED097OC4 Kindle display and this driver.
 **Please note that David Bird (https://github.com/G6EJD) owns the copyright to this software!** Only minor modifications where made for it to run with the epdiy driver.
 THe  license details are outlined in **License.txt**.
@@ -13,7 +15,7 @@ Building It
  - Dont forget to insert your Wi-Fi settings and openweathermap API key into owm_credentials.h
  - If you want to add more fonts, firmware may not fit into 1M and easiest way to fix it is to edit components/partition_table/partitions_singleapp.csv and change 1M to 2M
 
-![weather image](weather.jpg)
+![weather image](Weather-T5-4.7.jpg)
 
 License
 -------
